@@ -16,7 +16,7 @@ RUN apk add -u bash curl && \
 COPY ./nomad_server.hcl /etc/nomad.d/config.hcl
 
 # Setup bash and supervisord etc
-RUN apk add --update bash supervisor curl vim jq 
+RUN apk add --update bash supervisor
 RUN sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
 
 # Setup the supervisor d file

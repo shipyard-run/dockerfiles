@@ -5,6 +5,7 @@ ENV KUBECTL_VERSION=latest
 ENV HELM_VERSION=v3.0.2
 ENV DOCKER_VERSION=18.03.1-ce
 ENV CONSUL_VERSION=1.6.1
+ENV NOMAD_VERSION=0.10.2
 ENV VAULT_VERSION=1.3.1
 
 RUN apt-get update && \
@@ -32,6 +33,12 @@ RUN curl -sL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CO
     unzip consul.zip && \
     mv consul /usr/local/bin && \
     rm consul.zip
+
+# Install Nomad CLI
+RUN curl -sL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -o nomad.zip && \
+    unzip nomad.zip && \
+    mv nomad /usr/local/bin && \
+    rm nomad.zip
 
 # Install Vault CLI
 RUN curl -sL https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip -o vault.zip && \
