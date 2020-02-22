@@ -7,6 +7,7 @@ ENV DOCKER_VERSION=18.03.1-ce
 ENV CONSUL_VERSION=1.6.1
 ENV NOMAD_VERSION=0.10.2
 ENV VAULT_VERSION=1.3.1
+ENV SHIPYARD_VERSION=v0.0.0.beta.8
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -22,7 +23,8 @@ RUN apt-get update && \
       gnupg-agent \
       jq && \
       apt-get clean && \
-      apt-get autoremove --purge
+      apt-get autoremove --purge && \
+      rm -rf /var/lib/apt/lists/*
 
 # Install Docker CLI
 RUN curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VERSION.tgz | \
@@ -56,3 +58,9 @@ RUN curl -sL https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz -o ./helm
     tar -xzf ./helm.tar.gz && \
     mv ./linux-amd64/helm /usr/local/bin && \
     rm ./helm.tar.gz
+
+# Install Shipyard
+RUN curl -sL https://github.com/shipyard-run/shipyard/releases/download/${SHIPYARD_VERSION}/shipyard-linux-amd64.zip -o shipyard.zip && \
+    unzip shipyard.zip && \
+    mv shipyard /usr/local/bin && \
+    rm shipyard.zip
