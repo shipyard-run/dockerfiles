@@ -36,7 +36,7 @@ jobs:
           regex: "refs/tags/"
           replacement: ""
       
-      - name: Set tag to either sha to github tag
+      - name: Set tag to either commit sha or GitHub tag
         id: tag
         run: |
           echo "::set-output name=value::${{ github.sha }}"

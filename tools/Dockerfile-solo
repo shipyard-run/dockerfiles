@@ -6,6 +6,12 @@ ENV LOOP_VERSION=v0.0.1
 ENV GLOO_VERSION=v0.20.8
 ENV PATH "$HOME/.wasme/bin:$PATH"
 
+RUN apt-get update && \
+    apt install -y python && \
+    apt-get clean && \
+    apt-get autoremove --purge && \
+    rm -rf /var/lib/apt/lists/*
+
 # Install Squash
 RUN curl -sL https://github.com/solo-io/squash/releases/download/$SQUASH_VERSION/squashctl-linux -o squashctl && \
     mv squashctl /usr/local/bin && \
@@ -19,7 +25,7 @@ RUN curl -sL https://github.com/solo-io/gloo/releases/download/$GLOO_VERSION/glo
 # Install preview of Loop CLI
 RUN curl -sL https://github.com/solo-io/demos-gloo/releases/download/$LOOP_VERSION/loopctl-linux-amd64 -o  loopctl && \
     mv loopctl /usr/local/bin && \
-    chmod +x /usr/local/bin/loopctl    
+    chmod +x /usr/local/bin/loopctl 
 
 # Install WASME
 RUN curl -sL https://run.solo.io/wasme/install | sh
