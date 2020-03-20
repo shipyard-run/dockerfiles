@@ -17,13 +17,31 @@ jobs:
       matrix:
         image: [tools, tools-solo]
         include:
-          -  directory: tools
+          -  image: tools 
+             directory: tools
              dockerfile: Dockerfile
-          -  directory: tools
-             dockerfile: Dockerfile-gloo
+          -  image: tools-solo 
+             directory: tools
+             dockerfile: Dockerfile-solo
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Tag Version if Github tag
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        id: ghtag
+        uses: ashley-taylor/regex-property-action@v1.0
+        with:
+          value: ${{ github.ref }}
+          regex: "refs/tags/"
+          replacement: ""
+      
+      - name: Set tag to either sha to github tag
+        id: tag
+        run: |
+          echo "::set-output name=value::${{ github.sha }}"
+          if [[ "${{ steps.ghtag.outputs.value }}" == "" ]]; then echo "::set-output name=value::${{ steps.ghtag.outputs.value }}"; fi
+
       -
         name: Docker Login
         if: success() && startsWith(github.ref, 'refs/tags/')
@@ -32,14 +50,16 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASS }}
         run: |
           echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin 
+
       - 
         name: Build the Docker image
         run: |
           cd ${{ matrix.directory }}
-          docker build . --file ${{ matrix.dockerfile }} --tag shipyardrun/${{ matrix.image }}:${{ github.ref }
+          docker build . --file ${{ matrix.dockerfile }} --tag shipyardrun/${{ matrix.image }}:${{ steps.tag.outputs.value }}
+          docker tag shipyardrun/${{ matrix.image }}:${{ steps.tag.outputs.value }} shipyardrun/${{ matrix.image }}:latest
     
       - 
         name: Push the Docker image
         if: success() && startsWith(github.ref, 'refs/tags/')
         run: |
-          docker push shipyardrun/${{ matrix.image }}:${{ github.ref }
+          docker push shipyardrun/${{ matrix.image }}:${{ steps.tag.outputs.value }}
