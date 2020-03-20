@@ -1,0 +1,45 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        image: [tools, tools-solo]
+        include:
+          -  directory: tools
+             dockerfile: Dockerfile
+          -  directory: tools
+             dockerfile: Dockerfile-gloo
+
+    steps:
+      - uses: actions/checkout@v2
+      -
+        name: Docker Login
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASS }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin 
+      - 
+        name: Build the Docker image
+        run: |
+          cd ${{ matrix.directory }}
+          docker build . --file ${{ matrix.dockerfile }} --tag shipyardrun/${{ matrix.image }}:${{ github.ref }
+    
+      - 
+        name: Push the Docker image
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        run: |
+          docker push shipyardrun/${{ matrix.image }}:${{ github.ref }
