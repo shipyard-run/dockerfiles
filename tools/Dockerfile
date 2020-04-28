@@ -28,6 +28,8 @@ RUN apt-get update && \
       apt-get autoremove --purge && \
       rm -rf /var/lib/apt/lists/*
 
+# Copy installed tools to a specific directory, makes it easier to copy the tools
+# when this image is used as the base for another.
 RUN mkdir /usr/tools
 
 # Install Docker CLI
