@@ -7,6 +7,12 @@ build_docker:
 push_docker: build_docker
 	docker push ${REPO}:${VERSION}
 
+build_docker_go:
+	cd ./dev-go && docker build -t ${REPO}:go-${VERSION} .
+
+push_docker_go: build_docker_go
+	docker push ${REPO}:${VERSION}
+
 build_solo_docker:
 	docker build -f ./Dockerfile-gloo -t ${REPO}:solo .
 
