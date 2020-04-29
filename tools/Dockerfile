@@ -10,6 +10,7 @@ ENV VAULT_VERSION=1.4.0
 ENV SHIPYARD_VERSION=0.0.26
 
 ENV PATH="$PATH:/usr/tools"
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install -y \
