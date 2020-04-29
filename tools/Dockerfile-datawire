@@ -1,0 +1,6 @@
+FROM shipyardrun/tools:latest
+
+ENV TERM=xterm-256color
+
+RUN curl -fL https://metriton.datawire.io/downloads/linux/edgectl -o /usr/local/bin/edgectl && \
+    chmod a+x /usr/local/bin/edgectl

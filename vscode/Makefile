@@ -18,3 +18,9 @@ build_solo_docker:
 
 push_solo_docker: build_docker
 	docker push ${REPO}:solo
+
+build_datawire_docker:
+	docker build -f ./Dockerfile-datawire -t ${REPO}:datawire .
+
+push_datawire_docker: build_docker
+	docker push ${REPO}:datawire
