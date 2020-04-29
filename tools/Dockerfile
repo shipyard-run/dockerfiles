@@ -12,7 +12,6 @@ ENV SHIPYARD_VERSION=0.0.26
 ENV PATH="$PATH:/usr/tools"
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y \
       curl \
       zip \
