@@ -1,22 +1,36 @@
-FROM envoyproxy/envoy-alpine:v1.12.2
+FROM envoyproxy/envoy-alpine:v1.11.2
+
+# Versions to install
+ENV CONSUL_VERION=1.7.3
+ENV NOMAD_VERSION=0.11.2
+ENV CNI_PLUGINS=0.8.6
+
+# set default env vars so supervisor
+# does not crash on start
+ENV CONSUL_SERVER=localhost
+ENV CONSUL_DATACENTER=dc1
+
+RUN apk add --update bash supervisor curl docker iptables ip6tables
 
 # Fetch Consul
-RUN apk add -u bash curl && \
-    wget https://releases.hashicorp.com/consul/1.6.2/consul_1.6.2_linux_amd64.zip -O /tmp/consul.zip && \
+RUN wget https://releases.hashicorp.com/consul/${CONSUL_VERION}/consul_${CONSUL_VERION}_linux_amd64.zip -O /tmp/consul.zip && \
     unzip /tmp/consul.zip -d /tmp && \
     mv /tmp/consul /usr/local/bin/consul
 
 # Fetch the nomad binary
-RUN apk add -u bash curl && \
-    wget https://releases.hashicorp.com/nomad/0.10.2/nomad_0.10.2_linux_amd64.zip -O /tmp/nomad.zip && \
+RUN wget https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -O /tmp/nomad.zip && \
     unzip /tmp/nomad.zip -d /tmp && \
     mv /tmp/nomad /usr/local/bin/nomad
+
+# Install the CNI Plugins
+RUN wget https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS}/cni-plugins-linux-amd64-v${CNI_PLUGINS}.tgz -O /tmp/cni.tgz && \
+  mkdir -p /opt/cni/bin && \
+  tar -C /opt/cni/bin -xzf /tmp/cni.tgz
 
 # Add the nomad config
 COPY ./nomad_server.hcl /etc/nomad.d/config.hcl
 
 # Setup bash and supervisord etc
-RUN apk add --update bash supervisor
 RUN sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
 
 # Setup the supervisor d file
@@ -26,13 +40,6 @@ COPY supervisor.ini /etc/supervisor.d/supervisor.ini
 # Run supervisord
 RUN sed -i 's/;nodaemon=false/nodaemon=true/g' /etc/supervisord.conf
 
-# set default env vars so supervisor
-# does not crash on start
-ENV CONSUL_SERVER=localhost
-ENV CONSUL_DATACENTER=dc1
-
-# Docker
-RUN apk add -u docker
 
 # add default config folder
 RUN mkdir /config
