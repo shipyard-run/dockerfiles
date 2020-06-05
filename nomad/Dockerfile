@@ -12,6 +12,12 @@ ENV CONSUL_DATACENTER=dc1
 
 RUN apk add --update bash supervisor curl docker iptables ip6tables
 
+# Force storage driver to use vfs
+RUN mkdir -p /etc/docker
+RUN echo "{ \ 
+    \"storage-driver\": \"vfs\" \
+}" > /etc/docker/daemon.json
+
 # Fetch Consul
 RUN wget https://releases.hashicorp.com/consul/${CONSUL_VERION}/consul_${CONSUL_VERION}_linux_amd64.zip -O /tmp/consul.zip && \
     unzip /tmp/consul.zip -d /tmp && \

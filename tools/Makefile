@@ -1,5 +1,5 @@
 REPO = shipyardrun/tools
-VERSION = v0.0.4
+VERSION = v0.0.5
 
 build_docker:
 	docker build -t ${REPO}:${VERSION} .

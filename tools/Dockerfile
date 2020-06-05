@@ -4,10 +4,11 @@ ENV TERM=xterm-256color
 ENV KUBECTL_VERSION=latest
 ENV HELM_VERSION=v3.2.0
 ENV DOCKER_VERSION=18.09.9
-ENV CONSUL_VERSION=1.7.2
-ENV NOMAD_VERSION=0.11.1
-ENV VAULT_VERSION=1.4.0
-ENV SHIPYARD_VERSION=0.0.26
+ENV CONSUL_VERSION=1.7.3
+ENV NOMAD_VERSION=0.11.2
+ENV VAULT_VERSION=1.4.2
+ENV TERRAFORM_VERSION=0.12.25
+ENV SHIPYARD_VERSION=0.0.28
 
 ENV PATH="$PATH:/usr/tools"
 ENV DEBIAN_FRONTEND=noninteractive
@@ -53,6 +54,12 @@ RUN curl -sL https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT
     unzip vault.zip && \
     mv vault /usr/tools && \
     rm vault.zip
+
+# Install Terraform
+RUN curl -sL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip && \
+  unzip terraform.zip && \
+  mv terraform /usr/tools && \
+  rm terraform.zip
 
 # Install Kubectl
 RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
