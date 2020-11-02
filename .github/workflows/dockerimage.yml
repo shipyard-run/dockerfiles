@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [tools, tools-solo, tools-datawire]
+        image: [tools, nomad, tools-solo, tools-datawire]
         include:
           - image: tools
             directory: tools
