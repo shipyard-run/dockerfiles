@@ -63,3 +63,9 @@ jobs:
         run: |
           cd ${{ matrix.directory }}
           docker push gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
+          
+      - name: Send status to Discord
+        uses: sarisia/actions-status-discord@v1
+        if: steps.check_for_changes.outputs.change_count != '0'
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
