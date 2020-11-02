@@ -10,7 +10,6 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1
       matrix:
         image: [tools, tools-solo, tools-datawire]
         include:
@@ -41,22 +40,25 @@ jobs:
         if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           echo "changes: ${{ steps.check_for_changes.outputs.change_count }} event: ${{ github.event_name }}"
-          curl https://shipyard.run/install | bash
 
       - name: Build the Docker image
+        if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           cd ${{ matrix.directory }}
           docker build . --file ${{ matrix.dockerfile }} --tag gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
 
       - name: Setup GCP Tools
+        if: steps.check_for_changes.outputs.change_count != '0'
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '270.0.0'
           service_account_key: ${{ secrets.GCP_KEY }}
 
       - name: Docker Auth
+        if: steps.check_for_changes.outputs.change_count != '0'
         run: gcloud auth configure-docker
 
       - name: Push the Docker image
+        if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           docker push gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
