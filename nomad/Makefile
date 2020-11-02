@@ -1,5 +1,8 @@
-REPO = shipyardrun/nomad
-VERSION = v0.12.7
+REPO = gcr.io/shipyard-287511/nomad
+VERSION = $(shell cat ./VERSION)
+
+version:
+	echo ${VERSION}
 
 build_docker:
 	docker build -t ${REPO}:${VERSION} .

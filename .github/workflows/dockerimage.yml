@@ -2,10 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    tags:
-      - 'v*'
-  pull_request:
-    branches: [ master ]
+    branches: [main]
 
 jobs:
 
@@ -13,57 +10,53 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1 
+      max-parallel: 1
       matrix:
         image: [tools, tools-solo, tools-datawire]
         include:
-          -  image: tools 
-             directory: tools
-             dockerfile: Dockerfile
-          -  image: tools-solo 
-             directory: tools
-             dockerfile: Dockerfile-solo
-          -  image: tools-datawire
-             directory: tools
-             dockerfile: Dockerfile-datawire
+          - image: tools
+            directory: tools
+            dockerfile: Dockerfile
+          - image: nomad
+            directory: nomad
+            dockerfile: Dockerfile
+          - image: tools-solo
+            directory: tools
+            dockerfile: Dockerfile-solo
+          - image: tools-datawire
+            directory: tools
+            dockerfile: Dockerfile-datawire
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Tag Version if Github tag
-        if: success() && startsWith(github.ref, 'refs/tags/')
-        id: ghtag
-        uses: ashley-taylor/regex-property-action@v1.0
         with:
-          value: ${{ github.ref }}
-          regex: "refs/tags/"
-          replacement: ""
-      
-      - name: Set tag to either commit sha or GitHub tag
-        id: tag
-        run: |
-          echo "::set-output name=value::${{ github.sha }}"
-          if [[ "${{ steps.ghtag.outputs.value }}" == "" ]]; then echo "::set-output name=value::${{ steps.ghtag.outputs.value }}"; fi
+          fetch-depth: 3
 
-      -
-        name: Docker Login
-        if: success() && startsWith(github.ref, 'refs/tags/')
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASS }}
+      - name: Check for changes
+        id: check_for_changes
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin 
+          echo "::set-output name=change_count::$(git diff --name-only  HEAD^ HEAD | grep '${{ matrix.directory }}' | wc -l)"
 
-      - 
-        name: Build the Docker image
+      - name: Get dependencies
+        if: steps.check_for_changes.outputs.change_count != '0'
+        run: |
+          echo "changes: ${{ steps.check_for_changes.outputs.change_count }} event: ${{ github.event_name }}"
+          curl https://shipyard.run/install | bash
+
+      - name: Build the Docker image
         run: |
           cd ${{ matrix.directory }}
-          docker build . --file ${{ matrix.dockerfile }} --tag shipyardrun/${{ matrix.image }}:${{ steps.tag.outputs.value }}
-          docker tag shipyardrun/${{ matrix.image }}:${{ steps.tag.outputs.value }} shipyardrun/${{ matrix.image }}:latest
-    
-      - 
-        name: Push the Docker image
-        if: success() && startsWith(github.ref, 'refs/tags/')
+          docker build . --file ${{ matrix.dockerfile }} --tag gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
+
+      - name: Setup GCP Tools
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '270.0.0'
+          service_account_key: ${{ secrets.GCP_KEY }}
+
+      - name: Docker Auth
+        run: gcloud auth configure-docker
+
+      - name: Push the Docker image
         run: |
-          docker push shipyardrun/${{ matrix.image }}:${{ steps.tag.outputs.value }}
-          docker push shipyardrun/${{ matrix.image }}:latest
+          docker push gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
