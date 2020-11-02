@@ -35,6 +35,8 @@ RUN wget https://github.com/containernetworking/plugins/releases/download/v${CNI
 
 # Add the nomad config
 COPY ./nomad_server.hcl /etc/nomad.d/config.hcl
+COPY ./start_nomad.sh /etc/nomad.d/start_nomad.sh
+RUN chmod +x /etc/nomad.d/start_nomad.sh
 
 # Setup bash and supervisord etc
 RUN sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
