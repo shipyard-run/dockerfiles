@@ -1,8 +1,8 @@
 FROM envoyproxy/envoy-alpine:v1.11.2
 
 # Versions to install
-ENV CONSUL_VERION=1.8.0
-ENV NOMAD_VERSION=0.12.0
+ENV CONSUL_VERION=1.8.5
+ENV NOMAD_VERSION=0.12.7
 ENV CNI_PLUGINS=0.8.6
 
 # set default env vars so supervisor
@@ -16,7 +16,7 @@ RUN apk add --update bash supervisor curl docker iptables ip6tables
 RUN mkdir -p /etc/docker
 RUN echo "{ \ 
     \"storage-driver\": \"vfs\" \
-}" > /etc/docker/daemon.json
+    }" > /etc/docker/daemon.json
 
 # Fetch Consul
 RUN wget https://releases.hashicorp.com/consul/${CONSUL_VERION}/consul_${CONSUL_VERION}_linux_amd64.zip -O /tmp/consul.zip && \
@@ -30,8 +30,8 @@ RUN wget https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VER
 
 # Install the CNI Plugins
 RUN wget https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS}/cni-plugins-linux-amd64-v${CNI_PLUGINS}.tgz -O /tmp/cni.tgz && \
-  mkdir -p /opt/cni/bin && \
-  tar -C /opt/cni/bin -xzf /tmp/cni.tgz
+    mkdir -p /opt/cni/bin && \
+    tar -C /opt/cni/bin -xzf /tmp/cni.tgz
 
 # Add the nomad config
 COPY ./nomad_server.hcl /etc/nomad.d/config.hcl

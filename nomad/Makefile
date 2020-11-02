@@ -1,5 +1,5 @@
 REPO = shipyardrun/nomad
-VERSION = v0.12.0
+VERSION = v0.12.7
 
 build_docker:
 	docker build -t ${REPO}:${VERSION} .
