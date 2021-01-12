@@ -45,7 +45,7 @@ jobs:
         if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           cd ${{ matrix.directory }}
-          docker build . --file ${{ matrix.dockerfile }} --tag gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
+          docker build . --file ${{ matrix.dockerfile }} --tag shipyardrun/${{ matrix.image }}:$(cat VERSION)
 
       -
         name: Login to DockerHub
@@ -58,7 +58,7 @@ jobs:
         if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           cd ${{ matrix.directory }}
-          docker push gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
+          docker push shipyardrun/${{ matrix.image }}:$(cat VERSION)
           
       - name: Send status to Discord
         uses: sarisia/actions-status-discord@v1
