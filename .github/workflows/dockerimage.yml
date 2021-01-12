@@ -47,16 +47,12 @@ jobs:
           cd ${{ matrix.directory }}
           docker build . --file ${{ matrix.dockerfile }} --tag gcr.io/shipyard-287511/${{ matrix.image }}:$(cat VERSION)
 
-      - name: Setup GCP Tools
-        if: steps.check_for_changes.outputs.change_count != '0'
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1 
         with:
-          version: '270.0.0'
-          service_account_key: ${{ secrets.GCP_KEY }}
-
-      - name: Docker Auth
-        if: steps.check_for_changes.outputs.change_count != '0'
-        run: gcloud auth configure-docker
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
       - name: Push the Docker image
         if: steps.check_for_changes.outputs.change_count != '0'
