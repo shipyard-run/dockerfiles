@@ -1,4 +1,4 @@
-REPO = shipardrun/k3s
+REPO = shipyardrun/k3s
 VERSION = $(shell cat ./VERSION)
 
 version:
@@ -25,5 +25,5 @@ build_docker:
 	docker rm -f buildk3s 
 
 
-push_docker: build_docker
+push_docker:
 	docker push ${REPO}:${VERSION}

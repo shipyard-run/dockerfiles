@@ -1,10 +1,10 @@
 REPO = shipyardrun/tools
-VERSION = v0.0.5
+VERSION = $(shell cat ./VERSION)
 
 build_docker:
 	docker build -t ${REPO}:${VERSION} .
 
-push_docker: build_docker
+push_docker:
 	docker push ${REPO}:${VERSION}
 
 build_docker_dw:
