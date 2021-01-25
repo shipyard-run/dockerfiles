@@ -16,6 +16,9 @@ jobs:
           - image: tools
             directory: tools
             dockerfile: Dockerfile
+          - image: k3s
+            directory: k3s
+            dockerfile: Dockerfile
           - image: nomad
             directory: nomad
             dockerfile: Dockerfile
