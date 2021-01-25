@@ -18,10 +18,10 @@ build_docker:
 	sleep 5
 	docker exec buildk3s crictl images ls
 	docker commit \
-		--change "ENV CRI_CONFIG_FILE=\"/var/lib/rancher/k3s/agent/etc/crictl.yaml\"" \
-		--change "ENTRYPOINT [\"/bin/k3s\"]" \
-		--change "CMD [\"agent\"]" \
-		buildk3s ${REPO}:${VERSION}
+			--change "ENV CRI_CONFIG_FILE=\"/var/lib/rancher/k3s/agent/etc/crictl.yaml\"" \
+			--change "ENTRYPOINT [\"/bin/k3s\"]" \
+			--change "CMD [\"agent\"]" \
+		 	buildk3s ${REPO}:${VERSION}
 	docker rm -f buildk3s 
 
 
