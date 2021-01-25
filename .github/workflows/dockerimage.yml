@@ -60,7 +60,7 @@ jobs:
         if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           cd ${{ matrix.directory }}
-          docker push shipyardrun/${{ matrix.image }}:$(cat VERSION)
+          make push_docker
           
       - name: Send status to Discord
         uses: sarisia/actions-status-discord@v1
