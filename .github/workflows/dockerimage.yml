@@ -48,8 +48,7 @@ jobs:
         if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           cd ${{ matrix.directory }}
-          docker build . --file ${{ matrix.dockerfile }} --tag shipyardrun/${{ matrix.image }}:$(cat VERSION)
-
+          make build_docker
       -
         name: Login to DockerHub
         uses: docker/login-action@v1 
