@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [tools, nomad, tools-solo, tools-datawire]
+        image: [tools, nomad, tools-solo, tools-datawire, shipyard-all-in-one, k3s]
         include:
           - image: tools
             directory: tools
@@ -28,6 +28,9 @@ jobs:
           - image: tools-datawire
             directory: tools
             dockerfile: Dockerfile-datawire
+          - image: shipyard-all-in-one
+            directory: shipyard-all-in-one
+            dockerfile: Dockerfile
 
     steps:
       - uses: actions/checkout@v2
