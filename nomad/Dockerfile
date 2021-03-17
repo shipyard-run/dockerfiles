@@ -1,8 +1,8 @@
 FROM envoyproxy/envoy-alpine:v1.11.2
 
 # Versions to install
-ENV CONSUL_VERION=1.8.5
-ENV NOMAD_VERSION=0.12.7
+ENV CONSUL_VERION=1.8.9
+ENV NOMAD_VERSION=0.12.10
 ENV CNI_PLUGINS=0.8.6
 
 # set default env vars so supervisor

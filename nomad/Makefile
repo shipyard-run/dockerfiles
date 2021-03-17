@@ -1,4 +1,4 @@
-REPO = gcr.io/shipyard-287511/nomad
+REPO = shipyardrun/nomad
 VERSION = $(shell cat ./VERSION)
 
 version:

@@ -3,7 +3,7 @@ FROM alpine:latest
 # Versions to install
 ENV SHIPYARD_VERSION=0.2.15
 
-RUN apk add --update bash supervisor curl docker iptables ip6tables git
+RUN apk add --update --no-cache bash supervisor curl docker iptables ip6tables git ca-certificates
 
 # Force storage driver to use vfs
 RUN mkdir -p /etc/docker
