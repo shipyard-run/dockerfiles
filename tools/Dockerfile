@@ -9,6 +9,7 @@ ENV NOMAD_VERSION=1.0.4
 ENV VAULT_VERSION=1.6.2
 ENV TERRAFORM_VERSION=0.13.3
 ENV SHIPYARD_VERSION=0.2.11
+ENV WAYPOINT_VERSION=0.2.4
 
 ENV PATH="$PATH:/usr/tools"
 ENV DEBIAN_FRONTEND=noninteractive
@@ -60,6 +61,12 @@ RUN curl -sL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terra
   unzip terraform.zip && \
   mv terraform /usr/tools && \
   rm terraform.zip
+
+# Install Waypoint
+RUN curl -sL https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoint_${WAYPOINT_VERSION}_linux_amd64.zip -o waypoint.zip && \
+  unzip waypoint.zip && \
+  mv waypoint /usr/tools && \
+  rm waypoint.zip
 
 # Install Kubectl
 RUN curl -sLO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
