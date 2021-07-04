@@ -10,24 +10,21 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1
       matrix:
         image: [tools, nomad, tools-solo, tools-datawire, shipyard-all-in-one, k3s]
         include:
           - image: tools
-            directory: tools
+            directory: shipyard-tools
+            dockerfile: Dockerfile
+          - image: hashicorp-tools
+            directory: hashicorp-tools
             dockerfile: Dockerfile
           - image: k3s
             directory: k3s
             dockerfile: Dockerfile
           - image: nomad
             directory: nomad
-            dockerfile: Dockerfile
-          - image: tools-solo
-            directory: tools
-            dockerfile: Dockerfile-solo
-          - image: tools-datawire
-            directory: tools
-            dockerfile: Dockerfile-datawire
           - image: shipyard-all-in-one
             directory: shipyard-all-in-one
             dockerfile: Dockerfile
@@ -46,18 +43,18 @@ jobs:
         if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           echo "changes: ${{ steps.check_for_changes.outputs.change_count }} event: ${{ github.event_name }}"
+      
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
       - name: Build the Docker image
         if: steps.check_for_changes.outputs.change_count != '0'
         run: |
           cd ${{ matrix.directory }}
           make build_docker
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1 
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
 
       - name: Push the Docker image
         if: steps.check_for_changes.outputs.change_count != '0'
