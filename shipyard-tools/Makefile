@@ -14,4 +14,4 @@ build_docker:
 	docker buildx rm multi || true
 
 push_docker:
-	echo "Pushed image ${REPO}:${VERSION}
+	echo "Pushed image ${REPO}:${VERSION}"
