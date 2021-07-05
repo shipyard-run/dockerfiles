@@ -1,3 +1,3 @@
 # Tools
 
-This Dockerfile is for the default tools container
+This Dockerfile extends the latest tools image adding HashiCorp tools.
