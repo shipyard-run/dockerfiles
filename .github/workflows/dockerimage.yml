@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        image: [tools, nomad, tools-solo, tools-datawire, shipyard-all-in-one, k3s]
+        image: [tools, hashicorp-tools, nomad, shipyard-all-in-one, k3s]
         include:
           - image: tools
             directory: shipyard-tools
