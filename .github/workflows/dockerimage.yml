@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        image: [tools, hashicorp-tools, istio-tools, nomad, shipyard-all-in-one, k3s]
+        image: [tools, hashicorp-tools, istio-tools, nomad, shipyard-all-in-one, k3s, ubuntu]
         include:
           - image: tools
             directory: shipyard-tools
@@ -30,6 +30,9 @@ jobs:
             directory: nomad
           - image: shipyard-all-in-one
             directory: shipyard-all-in-one
+            dockerfile: Dockerfile
+          - image: ubuntu
+            directory: ubuntu
             dockerfile: Dockerfile
 
     steps:

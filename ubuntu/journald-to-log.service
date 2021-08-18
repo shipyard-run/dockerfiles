@@ -1,0 +1,11 @@
+[Unit]
+Description=Journalctl StdOut
+After=systemd-journald.service
+
+[Service]
+ExecStart=/bin/bash -c "journalctl -f | grep -v -e kernel -e init -e WSL2 -e unknown -e systemd -e sudo"
+StandardOutput=append:/dev/console
+StandardError=append:/dev/console
+
+[Install]
+WantedBy=multi-user.target
