@@ -1,0 +1,31 @@
+From 187ae57fcf401e456e8d6e96333992b32e74097d Mon Sep 17 00:00:00 2001
+From: Nic Jackson <jackson.nic@gmail.com>
+Date: Fri, 20 Aug 2021 12:54:04 +0100
+Subject: [PATCH] Remove fingerprint checks for bridge
+
+---
+ client/fingerprint/bridge_linux.go | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/client/fingerprint/bridge_linux.go b/client/fingerprint/bridge_linux.go
+index a4f04df7f..1265a4e53 100644
+--- a/client/fingerprint/bridge_linux.go
++++ b/client/fingerprint/bridge_linux.go
+@@ -20,10 +20,10 @@ const (
+ )
+ 
+ func (f *BridgeFingerprint) Fingerprint(req *FingerprintRequest, resp *FingerprintResponse) error {
+-	if err := f.detect(bridgeKernelModuleName); err != nil {
+-		f.logger.Warn("failed to detect bridge kernel module, bridge network mode disabled", "error", err)
+-		return nil
+-	}
++	//if err := f.detect(bridgeKernelModuleName); err != nil {
++	//	f.logger.Warn("failed to detect bridge kernel module, bridge network mode disabled", "error", err)
++	//	return nil
++	//}
+ 
+ 	resp.NodeResources = &structs.NodeResources{
+ 		Networks: []*structs.NetworkResource{{
+-- 
+2.17.1
+

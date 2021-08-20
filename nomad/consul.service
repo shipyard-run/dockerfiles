@@ -1,0 +1,19 @@
+[Unit]
+Description="HashiCorp Consul"
+Documentation=https://www.consul.io/
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/consul agent -config-dir /etc/consul.d/config
+ExecReload=/bin/kill --signal HUP $MAINPID
+KillMode=process
+KillSignal=SIGTERM
+Restart=on-failure
+LimitNOFILE=65536
+Environment="HTTP_PROXY="
+Environment="HTTPS_PROXY="
+Environment="NO_PROXY="
+
+[Install]
+WantedBy=multi-user.target
