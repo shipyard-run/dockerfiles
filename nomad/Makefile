@@ -22,7 +22,7 @@ build_docker_dev:
 	docker buildx use nomad
 	docker buildx inspect --bootstrap
 	docker buildx build --platform linux/amd64 \
-		-t ${REPO}:dev \
+		-t ${REPO}:${VERSION}-dev \
 		--build-arg NOMAD_VERSION=${VERSION} \
     -f ./Dockerfile \
     . \
