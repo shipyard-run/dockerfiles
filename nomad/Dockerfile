@@ -1,4 +1,4 @@
-FROM node:14.17.5 as ui_build
+FROM golang:1.16.3 as go_build
 
 ARG TARGETARCH
 ARG NOMAD_VERSION
@@ -14,30 +14,15 @@ RUN git clone https://github.com/hashicorp/nomad.git && \
 
 WORKDIR /go/src/github.com/hashicorp/nomad
 
-RUN make ember-dist
-
-
-FROM golang:1.16.3 as go_build
-
-ARG TARGETARCH
-ARG NOMAD_VERSION
-
-WORKDIR /go/src/github.com/hashicorp/
-
-RUN git config --global user.email "mail@shipyard.run" && \
-    git config --global user.name "Shipyard Bot"
-
-
-WORKDIR /go/src/github.com/hashicorp/nomad
-
-COPY --from=ui_build /go/src/github.com/hashicorp/nomad /go/src/github.com/hashicorp/nomad
+RUN rm -rf /go/src/github.com/hashicorp/nomad/ui 
+COPY ./ember-build/ui /go/src/github.com/hashicorp/nomad/ui
 
 COPY ./0001-Remove-fingerprint-checks-for-bridge.patch ./
 
-RUN git am ./0001-Remove-fingerprint-checks-for-bridge.patch && \
-    make bootstrap && \
-    make static-assets && \
-    make NOMAD_UI_TAG="ui" dev
+RUN git am ./0001-Remove-fingerprint-checks-for-bridge.patch
+RUN make bootstrap
+RUN make static-assets
+RUN make NOMAD_UI_TAG="ui" dev
 
 FROM ubuntu:20.04
 
@@ -65,7 +50,10 @@ RUN apt-get update && \
     apt-transport-https \
     gnupg \
     lsb-release \
-    wget
+    wget \
+    qemu-system-x86 \
+    udhcpd \
+    iproute2
 
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
     echo \
