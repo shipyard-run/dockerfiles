@@ -1,4 +1,4 @@
-ARG K8S_VERSION=v1.18.16
+ARG K8S_VERSION=v1.22.2
 
 FROM rancher/k3s:${K8S_VERSION}-k3s1 as base
 
