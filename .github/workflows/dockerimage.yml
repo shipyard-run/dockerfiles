@@ -34,6 +34,9 @@ jobs:
           - image: ubuntu
             directory: ubuntu
             dockerfile: Dockerfile
+          - image: k6
+            directory: k6
+            dockerfile: Dockerfile
 
     steps:
       - uses: actions/checkout@v2
