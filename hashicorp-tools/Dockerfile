@@ -1,4 +1,4 @@
-FROM shipyardrun/tools:v0.5.0 as base
+FROM shipyardrun/tools:v0.6.0 as base
 
 ENV TERM=xterm-256color
 
