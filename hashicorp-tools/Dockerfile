@@ -2,16 +2,16 @@ FROM shipyardrun/tools:v0.6.0 as base
 
 ENV TERM=xterm-256color
 
-ENV CONSUL_VERSION=1.10.0
-ENV NOMAD_VERSION=1.1.2
-ENV VAULT_VERSION=1.7.3
-ENV TERRAFORM_VERSION=1.0.1
-ENV WAYPOINT_VERSION=0.4.1
+ENV CONSUL_VERSION=1.11.4
+ENV NOMAD_VERSION=1.2.6
+ENV VAULT_VERSION=1.10.0
+ENV TERRAFORM_VERSION=1.1.7
+ENV WAYPOINT_VERSION=0.7.2
 
 ENV PATH="$PATH:/usr/tools"
 ENV DEBIAN_FRONTEND=noninteractive
 
-FROM base AS image-amd64-
+FROM base AS image-amd64
 
 # Install Consul CLI
 RUN curl -sL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip -o consul.zip && \
@@ -43,7 +43,7 @@ RUN curl -sL https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoin
   mv waypoint /usr/tools && \
   rm waypoint.zip
 
-FROM base AS image-arm64-
+FROM base AS image-arm64
 
 # Install Consul CLI
 RUN curl -sL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_arm64.zip -o consul.zip && \
@@ -75,7 +75,7 @@ RUN curl -sL https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoin
   mv waypoint /usr/tools && \
   rm waypoint.zip
 
-FROM image-${TARGETARCH}-${TARGETVARIANT}
+FROM image-${TARGETARCH}
 
 ARG TARGETPLATFORM
 ARG TARGETOS
