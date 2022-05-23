@@ -4,14 +4,14 @@ network "dc1" {
 
 nomad_cluster "dev" {
   client_nodes = "3"
-  version      = "1.1.4-supervisor"
+  version      = "1.3.1-dev"
 
   network {
     name = "network.dc1"
   }
 
   image {
-    name = "consul:1.8.0"
+    name = "consul:1.12.0"
   }
 
   consul_config = "./files/consul_agent.hcl"

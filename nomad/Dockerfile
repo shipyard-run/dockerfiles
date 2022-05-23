@@ -1,4 +1,4 @@
-FROM golang:1.16.3 as go_build
+FROM golang:1.17.10 as go_build
 
 ARG TARGETARCH
 ARG NOMAD_VERSION
@@ -30,8 +30,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV container=docker LANG=C.UTF-8
 
 # Versions to install
-ENV CONSUL_VERSION=1.10.1
-ENV CNI_PLUGINS=1.0.0
+ENV CONSUL_VERSION=1.12.0
+ENV CNI_PLUGINS=1.1.1
 
 # set default env vars so supervisor
 # does not crash on start
