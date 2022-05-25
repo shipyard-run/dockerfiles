@@ -46,7 +46,7 @@ RUN curl -sL https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoin
   rm waypoint.zip
 
 # Install Nomad Pack
-RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nomad-pack_${NOMAD_PACK_VERSION}_linux_amd64 -o nomad-pack.zip && \
+RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nomad-pack_${NOMAD_PACK_VERSION}_linux_amd64.zip -o nomad-pack.zip && \
   unzip nomad-pack.zip && \
   mv nomad-pack /usr/tools && \
   rm nomad-pack.zip
@@ -84,7 +84,7 @@ RUN curl -sL https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoin
   rm waypoint.zip
 
 # Install Nomad Pack
-RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nomad-pack_${NOMAD_PACK_VERSION}_linux_arm64 -o nomad-pack.zip && \
+RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nomad-pack_${NOMAD_PACK_VERSION}_linux_arm64.zip -o nomad-pack.zip && \
   unzip nomad-pack.zip && \
   mv nomad-pack /usr/tools && \
   rm nomad-pack.zip
