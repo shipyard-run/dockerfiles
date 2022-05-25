@@ -3,10 +3,12 @@ FROM shipyardrun/tools:v0.6.0 as base
 ENV TERM=xterm-256color
 
 ENV CONSUL_VERSION=1.12.0
-ENV NOMAD_VERSION=1.2.6
+ENV NOMAD_VERSION=1.3.1
 ENV VAULT_VERSION=1.10.2
 ENV TERRAFORM_VERSION=1.1.9
 ENV WAYPOINT_VERSION=0.8.1
+ENV NOMAD_PACK_VERSION=0.0.1-techpreview2
+
 
 ENV PATH="$PATH:/usr/tools"
 ENV DEBIAN_FRONTEND=noninteractive
@@ -43,6 +45,12 @@ RUN curl -sL https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoin
   mv waypoint /usr/tools && \
   rm waypoint.zip
 
+# Install Nomad Pack
+RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nomad-pack_${NOMAD_PACK_VERSION}_linux_amd64 -o nomad-pack.zip && \
+  unzip nomad-pack.zip && \
+  mv nomad-pack /usr/tools && \
+  rm nomad-pack.zip
+
 FROM base AS image-arm64
 
 # Install Consul CLI
@@ -74,6 +82,12 @@ RUN curl -sL https://releases.hashicorp.com/waypoint/${WAYPOINT_VERSION}/waypoin
   unzip waypoint.zip && \
   mv waypoint /usr/tools && \
   rm waypoint.zip
+
+# Install Nomad Pack
+RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nomad-pack_${NOMAD_PACK_VERSION}_linux_arm64 -o nomad-pack.zip && \
+  unzip nomad-pack.zip && \
+  mv nomad-pack /usr/tools && \
+  rm nomad-pack.zip
 
 FROM image-${TARGETARCH}
 
