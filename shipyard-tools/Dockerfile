@@ -27,7 +27,7 @@ FROM base AS image-amd64-
 ENV KUBECTL_VERSION=latest
 ENV HELM_VERSION=v3.7.2
 ENV DOCKER_VERSION=20.10.9
-ENV SHIPYARD_VERSION=0.3.38
+ENV SHIPYARD_VERSION=0.3.54
 
 # Copy installed tools to a specific directory, makes it easier to copy the tools
 # when this image is used as the base for another.
