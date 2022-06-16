@@ -1,4 +1,4 @@
-FROM shipyardrun/tools:v0.6.0 as base
+FROM shipyardrun/tools:v0.7.0 as base
 
 ENV TERM=xterm-256color
 
@@ -7,6 +7,7 @@ ENV NOMAD_VERSION=1.3.1
 ENV VAULT_VERSION=1.10.2
 ENV TERRAFORM_VERSION=1.1.9
 ENV WAYPOINT_VERSION=0.8.1
+ENV BOUNDARY_VERSION=0.8.1
 ENV NOMAD_PACK_VERSION=0.0.1-techpreview2
 
 
@@ -51,6 +52,12 @@ RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nom
   mv nomad-pack /usr/tools && \
   rm nomad-pack.zip
 
+# Install Boundary
+RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/nomad-pack_${BOUNDARY_VERSION}_linux_amd64.zip -o boundary.zip && \
+  unzip boundary.zip && \
+  mv boundary /usr/tools && \
+  rm boundary.zip
+
 FROM base AS image-arm64
 
 # Install Consul CLI
@@ -88,6 +95,12 @@ RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nom
   unzip nomad-pack.zip && \
   mv nomad-pack /usr/tools && \
   rm nomad-pack.zip
+
+# Install Boundary
+RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/nomad-pack_${BOUNDARY_VERSION}_linux_arm64.zip -o boundary.zip && \
+  unzip boundary.zip && \
+  mv boundary /usr/tools && \
+  rm boundary.zip
 
 FROM image-${TARGETARCH}
 
