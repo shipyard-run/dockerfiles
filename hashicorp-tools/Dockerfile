@@ -53,7 +53,7 @@ RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nom
   rm nomad-pack.zip
 
 # Install Boundary
-RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/nomad-pack_${BOUNDARY_VERSION}_linux_amd64.zip -o boundary.zip && \
+RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/boundary_${BOUNDARY_VERSION}_linux_amd64.zip -o boundary.zip && \
   unzip boundary.zip && \
   mv boundary /usr/tools && \
   rm boundary.zip
@@ -97,7 +97,7 @@ RUN curl -sL https://releases.hashicorp.com/nomad-pack/${NOMAD_PACK_VERSION}/nom
   rm nomad-pack.zip
 
 # Install Boundary
-RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/nomad-pack_${BOUNDARY_VERSION}_linux_arm64.zip -o boundary.zip && \
+RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/boundary_${BOUNDARY_VERSION}_linux_arm64.zip -o boundary.zip && \
   unzip boundary.zip && \
   mv boundary /usr/tools && \
   rm boundary.zip
