@@ -30,7 +30,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV container=docker LANG=C.UTF-8
 
 # Versions to install
-ENV CONSUL_VERSION=1.12.0
+ENV CONSUL_VERSION=1.12.2
 ENV CNI_PLUGINS=1.1.1
 
 # set default env vars so supervisor
@@ -53,6 +53,7 @@ RUN apt-get update && \
     wget \
     qemu-system-x86 \
     udhcpd \
+    dnsmasq \
     iproute2
 
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
@@ -133,9 +134,6 @@ COPY ./consul_config.hcl /etc/consul.d/config/config.hcl
 
 # Fetch the nomad binary
 COPY --from=go_build /go/src/github.com/hashicorp/nomad/pkg/linux_${TARGETARCH}/nomad /usr/bin/nomad
-#RUN curl -L https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${TARGETARCH}.zip -o /tmp/nomad.zip && \
-#    unzip /tmp/nomad.zip -d /tmp && \
-#    mv /tmp/nomad /usr/bin/nomad
 
 # Install the CNI Plugins
 RUN curl -L https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS}/cni-plugins-linux-${TARGETARCH}-v${CNI_PLUGINS}.tgz -o /tmp/cni.tgz && \
@@ -149,6 +147,9 @@ RUN mkdir -p /var/lib/nomad
 COPY ./nomad_config.hcl /etc/nomad.d/config.hcl
 COPY ./start_nomad.sh /etc/nomad.d/start_nomad.sh
 RUN chmod +x /etc/nomad.d/start_nomad.sh
+
+# Configure Dnsmasq to use Consul DNS
+RUN echo "server=/consul/127.0.0.1#8600" > /etc/dnsmasq.d/10-consul
 
 # Setup bash and supervisord etc
 RUN sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd

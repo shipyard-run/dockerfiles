@@ -1,5 +1,6 @@
 REPO = shipyardrun/nomad
 VERSION = $(shell cat ./VERSION)
+SUBVER = "-1"
 
 version:
 	echo ${VERSION}
@@ -10,7 +11,7 @@ build_docker: build_ui
 	docker buildx use nomad
 	docker buildx inspect --bootstrap
 	docker buildx build --platform linux/arm64,linux/amd64 \
-		-t ${REPO}:${VERSION} \
+		-t ${REPO}:${VERSION}${SUBVER} \
 		--build-arg NOMAD_VERSION=${VERSION} \
     -f ./Dockerfile \
 		--no-cache \
@@ -23,7 +24,7 @@ build_docker_dev: build_ui
 	docker buildx use nomad
 	docker buildx inspect --bootstrap
 	docker buildx build --platform linux/amd64 \
-		-t ${REPO}:${VERSION}-dev \
+		-t ${REPO}:${VERSION}${SUBVER}.dev \
 		--build-arg NOMAD_VERSION=${VERSION} \
     -f ./Dockerfile \
 		--no-cache \
@@ -53,4 +54,4 @@ clean_context:
 
 push_docker:
 # docker push ${REPO}:${VERSION}
-	echo "Pushed image ${REPO}:${VERSION}"
+	echo "Pushed image ${REPO}:${VERSION}${SUBVER}"
