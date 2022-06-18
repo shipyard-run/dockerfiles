@@ -148,8 +148,9 @@ COPY ./nomad_config.hcl /etc/nomad.d/config.hcl
 COPY ./start_nomad.sh /etc/nomad.d/start_nomad.sh
 RUN chmod +x /etc/nomad.d/start_nomad.sh
 
-# Configure Dnsmasq to use Consul DNS
+# Configure Dnsmasq to use Consul DN
 RUN echo "server=/consul/127.0.0.1#8600" > /etc/dnsmasq.d/10-consul
+RUN echo "server=127.0.0.11" >> /etc/dnsmasq.d/10-consul
 
 # Setup bash and supervisord etc
 RUN sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
