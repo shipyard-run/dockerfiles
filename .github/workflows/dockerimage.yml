@@ -37,6 +37,9 @@ jobs:
           - image: k6
             directory: k6
             dockerfile: Dockerfile
+          - image: vscode-server
+            directory: vscode-server
+            dockerfile: Dockerfile
 
     steps:
       - uses: actions/checkout@v2
