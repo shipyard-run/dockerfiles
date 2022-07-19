@@ -1,5 +1,5 @@
 REPO = shipyardrun/vscode-server
-VERSION = $(shell cat ./VERSION)
+VERSION = base-$(shell cat ./VERSION)
 
 build-local:
 	docker build -t shipyardrun/vscode-server:dev .
@@ -11,7 +11,7 @@ build-docker:
 	docker buildx inspect --bootstrap
 	docker buildx build --platform linux/arm64,linux/amd64 \
 		-t ${REPO}:${VERSION} \
-    	-f ./Dockerfile \
+    -f ./Dockerfile \
 		--no-cache \
     	. \
 		--push
