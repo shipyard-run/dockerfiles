@@ -7,7 +7,7 @@ ENV NOMAD_VERSION=1.3.5
 ENV VAULT_VERSION=1.11.3
 ENV TERRAFORM_VERSION=1.2.9
 ENV WAYPOINT_VERSION=0.9.1
-ENV BOUNDARY_VERSION=0.10.3
+ENV BOUNDARY_VERSION=0.10.5
 ENV NOMAD_PACK_VERSION=0.0.1-techpreview2
 
 
@@ -58,6 +58,11 @@ RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/boundar
   mv boundary /usr/tools && \
   rm boundary.zip
 
+# Install psql for Boundary
+RUN apt-get update && apt-get install -y \
+  postgresql-client \
+  && rm -rf /var/lib/apt/lists/*
+
 FROM base AS image-arm64
 
 # Install Consul CLI
@@ -102,6 +107,11 @@ RUN curl -sL https://releases.hashicorp.com/boundary/${BOUNDARY_VERSION}/boundar
   mv boundary /usr/tools && \
   rm boundary.zip
 
+# Install psql for Boundary
+RUN apt-get update && apt-get install -y \
+  postgresql-client \
+  && rm -rf /var/lib/apt/lists/*
+
 FROM image-${TARGETARCH}
 
 ARG TARGETPLATFORM
@@ -111,4 +121,4 @@ ARG TARGETVARIANT
 ARG BUILDPLATFORM
 ARG BUILDARCH
 
-RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM $TARGETARCH $TARGETVARIANT"  
+RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM $TARGETARCH $TARGETVARIANT"
