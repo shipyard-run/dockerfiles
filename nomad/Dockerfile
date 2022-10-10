@@ -1,4 +1,4 @@
-FROM golang:1.17.10 as go_build
+FROM golang:1.19.2 as go_build
 
 ARG TARGETARCH
 ARG NOMAD_VERSION

@@ -1,6 +1,6 @@
 REPO = shipyardrun/nomad
 VERSION = $(shell cat ./VERSION)
-SUBVER = "-1"
+SUBVER = 
 
 version:
 	echo ${VERSION}
