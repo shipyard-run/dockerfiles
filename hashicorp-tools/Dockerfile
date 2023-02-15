@@ -2,12 +2,12 @@ FROM shipyardrun/tools:v0.7.0 as base
 
 ENV TERM=xterm-256color
 
-ENV CONSUL_VERSION=1.12.4
-ENV NOMAD_VERSION=1.3.5
-ENV VAULT_VERSION=1.11.3
-ENV TERRAFORM_VERSION=1.2.9
-ENV WAYPOINT_VERSION=0.9.1
-ENV BOUNDARY_VERSION=0.10.3
+ENV CONSUL_VERSION=1.14.4
+ENV NOMAD_VERSION=1.4.3
+ENV VAULT_VERSION=1.12.3
+ENV TERRAFORM_VERSION=1.3.8
+ENV WAYPOINT_VERSION=0.10.5
+ENV BOUNDARY_VERSION=0.12.0
 ENV NOMAD_PACK_VERSION=0.0.1-techpreview2
 
 
@@ -18,21 +18,21 @@ FROM base AS image-amd64
 
 # Install Consul CLI
 RUN curl -sL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip -o consul.zip && \
-    unzip consul.zip && \
-    mv consul /usr/tools && \
-    rm consul.zip
+  unzip consul.zip && \
+  mv consul /usr/tools && \
+  rm consul.zip
 
 # Install Nomad CLI
 RUN curl -sL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -o nomad.zip && \
-    unzip nomad.zip && \
-    mv nomad /usr/tools && \
-    rm nomad.zip
+  unzip nomad.zip && \
+  mv nomad /usr/tools && \
+  rm nomad.zip
 
 # Install Vault CLI
 RUN curl -sL https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip -o vault.zip && \
-    unzip vault.zip && \
-    mv vault /usr/tools && \
-    rm vault.zip
+  unzip vault.zip && \
+  mv vault /usr/tools && \
+  rm vault.zip
 
 # Install Terraform
 RUN curl -sL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip && \
@@ -62,21 +62,21 @@ FROM base AS image-arm64
 
 # Install Consul CLI
 RUN curl -sL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_arm64.zip -o consul.zip && \
-    unzip consul.zip && \
-    mv consul /usr/tools && \
-    rm consul.zip
+  unzip consul.zip && \
+  mv consul /usr/tools && \
+  rm consul.zip
 
 # Install Nomad CLI
 RUN curl -sL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_arm64.zip -o nomad.zip && \
-    unzip nomad.zip && \
-    mv nomad /usr/tools && \
-    rm nomad.zip
+  unzip nomad.zip && \
+  mv nomad /usr/tools && \
+  rm nomad.zip
 
 # Install Vault CLI
 RUN curl -sL https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_arm64.zip -o vault.zip && \
-    unzip vault.zip && \
-    mv vault /usr/tools && \
-    rm vault.zip
+  unzip vault.zip && \
+  mv vault /usr/tools && \
+  rm vault.zip
 
 # Install Terraform
 RUN curl -sL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_arm64.zip -o terraform.zip && \
