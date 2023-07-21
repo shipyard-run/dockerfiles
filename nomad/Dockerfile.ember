@@ -1,4 +1,4 @@
-FROM node:14.17.5 as ui_build
+FROM node:20.4 as ui_build
 
 ARG TARGETARCH
 ARG NOMAD_VERSION
@@ -6,11 +6,11 @@ ARG NOMAD_VERSION
 WORKDIR /go/src/github.com/hashicorp/
 
 RUN git config --global user.email "mail@shipyard.run" && \
-    git config --global user.name "Shipyard Bot"
+  git config --global user.name "Shipyard Bot"
 
 RUN git clone https://github.com/hashicorp/nomad.git && \
-    cd nomad && \
-    git checkout v${NOMAD_VERSION}
+  cd nomad && \
+  git checkout v${NOMAD_VERSION}
 
 WORKDIR /go/src/github.com/hashicorp/nomad
 

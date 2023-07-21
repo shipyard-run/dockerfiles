@@ -30,7 +30,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV container=docker LANG=C.UTF-8
 
 # Versions to install
-ENV CONSUL_VERSION=1.15.4
+ENV CONSUL_VERSION=1.16.0
 ENV CNI_PLUGINS=1.1.1
 
 # set default env vars so supervisor
