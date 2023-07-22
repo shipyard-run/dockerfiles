@@ -1,30 +1,5 @@
-FROM golang:1.20.5 as go_build
 
-ARG TARGETARCH
-ARG NOMAD_VERSION
-
-WORKDIR /go/src/github.com/hashicorp/
-
-RUN git config --global user.email "mail@shipyard.run" && \
-  git config --global user.name "Shipyard Bot"
-
-RUN git clone https://github.com/hashicorp/nomad.git && \
-  cd nomad && \
-  git checkout v${NOMAD_VERSION}
-
-WORKDIR /go/src/github.com/hashicorp/nomad
-
-RUN rm -rf /go/src/github.com/hashicorp/nomad/ui 
-COPY ./ember-build/ui /go/src/github.com/hashicorp/nomad/ui
-
-COPY ./0001-Remove-fingerprint-checks-for-bridge.patch ./
-
-RUN git am ./0001-Remove-fingerprint-checks-for-bridge.patch
-RUN make bootstrap
-RUN make static-assets
-RUN make NOMAD_UI_TAG="ui" dev
-
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV container=docker LANG=C.UTF-8
@@ -44,7 +19,7 @@ ARG NOMAD_VERSION
 # Enable all repositories.
 RUN apt-get update && \
   apt-get install -y \
-  software-properties-common supervisor rsyslog iproute2 python python-apt sudo bash ca-certificates \
+  software-properties-common supervisor rsyslog iproute2 python3 python3-apt sudo bash ca-certificates \
   curl net-tools jq unzip vim dnsutils iputils-ping socat \
   iptables \
   apt-transport-https \
@@ -132,9 +107,6 @@ RUN mkdir -p /etc/consul.d/config
 # Add the default consul config
 COPY ./consul_config.hcl /etc/consul.d/config/config.hcl
 
-# Fetch the nomad binary
-COPY --from=go_build /go/src/github.com/hashicorp/nomad/pkg/linux_${TARGETARCH}/nomad /usr/bin/nomad
-
 # Install the CNI Plugins
 RUN curl -L https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS}/cni-plugins-linux-${TARGETARCH}-v${CNI_PLUGINS}.tgz -o /tmp/cni.tgz && \
   mkdir -p /opt/cni/bin && \
@@ -160,6 +132,9 @@ COPY supervisor.ini /etc/supervisor/conf.d/supervisor.conf
 
 # Run supervisord
 RUN sed -i '/\[supervisord\]/a nodaemon=true' /etc/supervisor/supervisord.conf
+
+# COPY the nomad binary
+COPY ./nomad-build/out/${TARGETARCH}/nomad /usr/bin/nomad
 
 VOLUME /var/lib/docker
 

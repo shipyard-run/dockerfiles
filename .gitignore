@@ -1,2 +1,3 @@
 .envrc
 nomad/ember-build
+nomad/nomad-build

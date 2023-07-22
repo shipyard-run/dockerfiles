@@ -1,0 +1,31 @@
+FROM golang:1.20.5 as go_build
+
+ARG TARGETARCH
+ARG NOMAD_VERSION
+
+RUN apt-get update && apt-get install -y gcc-aarch64-linux-gnu
+
+WORKDIR /go/src/github.com/hashicorp/
+
+RUN git config --global user.email "mail@shipyard.run" && \
+  git config --global user.name "Shipyard Bot"
+
+RUN git clone https://github.com/hashicorp/nomad.git && \
+  cd nomad && \
+  git checkout v${NOMAD_VERSION}
+
+WORKDIR /go/src/github.com/hashicorp/nomad
+
+RUN rm -rf /go/src/github.com/hashicorp/nomad/ui 
+COPY ./ember-build/ui /go/src/github.com/hashicorp/nomad/ui
+
+COPY ./0001-Remove-fingerprint-checks-for-bridge.patch ./
+
+RUN git am ./0001-Remove-fingerprint-checks-for-bridge.patch
+RUN make bootstrap
+
+RUN mkdir -p out/arm64 && mkdir -p out/amd64
+
+RUN go mod tidy
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build -trimpath -tags="ui codegen_generated release" -o ./out/arm64 .
+RUN GO_TAGS=ui CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -trimpath -tags="ui codegen_generated release" -o ./out/amd64 .
