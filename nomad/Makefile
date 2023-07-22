@@ -7,7 +7,7 @@ version:
 
 build_docker: build_docker_binaries
 # Build a multiarch image and push to remote registry
-	docker buildx create --name nomad || true
+	docker buildx create --name nomad --use || true
 	docker buildx build --platform linux/arm64,linux/amd64 \
 		-t ${REPO}:${VERSION}${SUBVER} \
 		--build-arg NOMAD_VERSION=${VERSION} \
