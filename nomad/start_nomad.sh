@@ -10,8 +10,4 @@ else
   update-ca-certificates
 fi
 
-# update resolve.conf to add DNSMasq
-echo "options ndots:0" > /etc/resolv.conf
-echo "nameserver 127.0.0.1" >> /etc/resolv.conf
-
 /usr/bin/nomad agent -config /etc/nomad.d -log-level=DEBUG
