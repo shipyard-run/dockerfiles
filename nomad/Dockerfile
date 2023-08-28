@@ -5,8 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV container=docker LANG=C.UTF-8
 
 # Versions to install
-ENV CONSUL_VERSION=1.16.0
-ENV CNI_PLUGINS=1.1.1
+ENV CONSUL_VERSION=1.16.1
+ENV CNI_PLUGINS=1.3.0
 
 # set default env vars so supervisor
 # does not crash on start
@@ -28,17 +28,20 @@ RUN apt-get update && \
   wget \
   qemu-system-x86 \
   udhcpd \
-  iproute2
+  iproute2 \
+  fuse-overlayfs && \
+  apt-get clean
 
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
   echo \
   "deb [arch=${TARGETARCH} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
   apt-get update && \
-  apt-get install -y docker-ce docker-ce-cli containerd.io
+  apt-get install -y docker-ce docker-ce-cli containerd.io && \
+  apt-get clean
 
 # https://github.com/docker/docker/tree/master/hack/dind
-ENV DIND_COMMIT 42b1175eda071c0e9121e1d64345928384a93df1
+ENV DIND_COMMIT d58df1fc6c866447ce2cd129af10e5b507705624
 
 RUN set -eux; \
   wget -O /usr/local/bin/dind "https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind"; \
@@ -86,18 +89,12 @@ RUN set -eux; \
 ENV JAVA_HOME=/usr/lib/jvm/openjdk \
   PATH="/usr/lib/jvm/openjdk/bin:$PATH"
 
-# Force storage driver to use vfs
-RUN mkdir -p /etc/docker
-RUN echo "{ \ 
-  \"storage-driver\": \"vfs\" \
-  }" > /etc/docker/daemon.json
-
 # Fetch Consul
 RUN curl -L https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${TARGETARCH}.zip -o /tmp/consul.zip && \
   cd /tmp && \
-  unzip consul.zip && \
-  mv consul /usr/bin/consul && \
-  chmod +x /usr/bin/consul
+  unzip consul.zip consul -d /usr/bin && \
+  chmod +x /usr/bin/consul && \
+  rm /tmp/consul.zip
 
 # Create the Consul config directory
 RUN mkdir -p /etc/consul.d/data
@@ -109,7 +106,15 @@ COPY ./consul_config.hcl /etc/consul.d/config/config.hcl
 # Install the CNI Plugins
 RUN curl -L https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS}/cni-plugins-linux-${TARGETARCH}-v${CNI_PLUGINS}.tgz -o /tmp/cni.tgz && \
   mkdir -p /opt/cni/bin && \
-  tar -C /opt/cni/bin -xzf /tmp/cni.tgz
+  tar -C /opt/cni/bin -xzf /tmp/cni.tgz && \
+  rm /tmp/cni.tgz
+
+# Fetch Nomad
+RUN curl -L https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${TARGETARCH}.zip -o /tmp/nomad.zip && \
+  cd /tmp && \
+  unzip nomad.zip nomad -d /usr/bin && \
+  chmod +x /usr/bin/nomad && \
+  rm /tmp/nomad.zip
 
 # Creat the nomad data directory
 RUN mkdir -p /var/lib/nomad
@@ -119,17 +124,11 @@ COPY ./nomad_config.hcl /etc/nomad.d/config.hcl
 COPY ./start_nomad.sh /etc/nomad.d/start_nomad.sh
 RUN chmod +x /etc/nomad.d/start_nomad.sh
 
-# Setup bash and supervisord etc
+# Setup bash
 RUN sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
 
-# Setup the supervisor d file
-COPY supervisor.ini /etc/supervisor/conf.d/supervisor.conf
-
-# Run supervisord
-RUN sed -i '/\[supervisord\]/a nodaemon=true' /etc/supervisor/supervisord.conf
-
-# COPY the nomad binary
-COPY ./nomad-build/out/${TARGETARCH}/nomad /usr/bin/nomad
+# Setup the supervisor conf file
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 VOLUME /var/lib/docker
 
