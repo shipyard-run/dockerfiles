@@ -10,4 +10,4 @@ else
   update-ca-certificates
 fi
 
-/usr/bin/nomad agent -config /etc/nomad.d -log-level=DEBUG
+exec /usr/bin/nomad agent -config /etc/nomad.d -log-level=DEBUG

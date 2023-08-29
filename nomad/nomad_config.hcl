@@ -7,6 +7,9 @@ server {
 
 client {
     enabled = true
+    options = {
+      "fingerprint.denylist" = "env_digitalocean,env_aws,env_gce,env_azure"
+    }
 }
 
 plugin "raw_exec" {
