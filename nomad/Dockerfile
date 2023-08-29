@@ -18,7 +18,7 @@ ARG NOMAD_VERSION
 
 # Enable all repositories.
 RUN apt-get update && \
-  apt-get install -y \
+  apt-get install -y -o APT::Install-Suggests=0 -o APT::Install-Recommends=0 \
   software-properties-common supervisor rsyslog iproute2 python3 python3-apt sudo bash ca-certificates \
   curl net-tools jq unzip vim dnsutils iputils-ping socat \
   iptables \
@@ -30,15 +30,15 @@ RUN apt-get update && \
   udhcpd \
   iproute2 \
   fuse-overlayfs && \
-  apt-get clean
+  apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
   echo \
   "deb [arch=${TARGETARCH} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
   apt-get update && \
-  apt-get install -y docker-ce docker-ce-cli containerd.io && \
-  apt-get clean
+  apt-get install -y -o APT::Install-Suggests=0 -o APT::Install-Recommends=0 docker-ce docker-ce-cli containerd.io && \
+  apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # https://github.com/docker/docker/tree/master/hack/dind
 ENV DIND_COMMIT d58df1fc6c866447ce2cd129af10e5b507705624
@@ -47,8 +47,7 @@ RUN set -eux; \
   wget -O /usr/local/bin/dind "https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind"; \
   chmod +x /usr/local/bin/dind
 
-COPY dockerd-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/dockerd-entrypoint.sh
+COPY --chmod=0755 dockerd-entrypoint.sh /usr/local/bin/
 
 # Add java
 RUN set -eux; \
@@ -86,28 +85,12 @@ RUN set -eux; \
   tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
   rm -rf /tmp/openjdk.tar.gz;
 
-ENV JAVA_HOME=/usr/lib/jvm/openjdk \
-  PATH="/usr/lib/jvm/openjdk/bin:$PATH"
-
 # Fetch Consul
 RUN curl -L https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${TARGETARCH}.zip -o /tmp/consul.zip && \
   cd /tmp && \
   unzip consul.zip consul -d /usr/bin && \
   chmod +x /usr/bin/consul && \
   rm /tmp/consul.zip
-
-# Create the Consul config directory
-RUN mkdir -p /etc/consul.d/data
-RUN mkdir -p /etc/consul.d/config
-
-# Add the default consul config
-COPY ./consul_config.hcl /etc/consul.d/config/config.hcl
-
-# Install the CNI Plugins
-RUN curl -L https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS}/cni-plugins-linux-${TARGETARCH}-v${CNI_PLUGINS}.tgz -o /tmp/cni.tgz && \
-  mkdir -p /opt/cni/bin && \
-  tar -C /opt/cni/bin -xzf /tmp/cni.tgz && \
-  rm /tmp/cni.tgz
 
 # Fetch Nomad
 RUN curl -L https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${TARGETARCH}.zip -o /tmp/nomad.zip && \
@@ -116,13 +99,21 @@ RUN curl -L https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_
   chmod +x /usr/bin/nomad && \
   rm /tmp/nomad.zip
 
-# Creat the nomad data directory
-RUN mkdir -p /var/lib/nomad
+# Install the CNI Plugins
+RUN curl -L https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS}/cni-plugins-linux-${TARGETARCH}-v${CNI_PLUGINS}.tgz -o /tmp/cni.tgz && \
+  mkdir -p /opt/cni/bin && \
+  tar -C /opt/cni/bin -xzf /tmp/cni.tgz && \
+  rm /tmp/cni.tgz
+
+# Create the Nomad, Consul Data directories
+RUN mkdir -p /etc/consul.d/data /etc/consul.d/config /var/lib/nomad
+
+# Add the default consul config
+COPY ./consul_config.hcl /etc/consul.d/config/config.hcl
 
 # Add the nomad config
 COPY ./nomad_config.hcl /etc/nomad.d/config.hcl
-COPY ./start_nomad.sh /etc/nomad.d/start_nomad.sh
-RUN chmod +x /etc/nomad.d/start_nomad.sh
+COPY --chmod=0755 ./start_nomad.sh /etc/nomad.d/start_nomad.sh
 
 # Setup bash
 RUN sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
@@ -132,5 +123,6 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 VOLUME /var/lib/docker
 
+ENV JAVA_HOME=/usr/lib/jvm/openjdk PATH="/usr/lib/jvm/openjdk/bin:$PATH"
 ENTRYPOINT ["/usr/bin/supervisord"]
 CMD ["-c", "/etc/supervisor/supervisord.conf"]
