@@ -9,6 +9,7 @@ advertise_addr = "{{GetInterfaceIP \"eth0\"}}"
 
 ports {
   grpc = 8502
+  dns = 53
 }
 
 connect {
