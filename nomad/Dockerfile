@@ -29,6 +29,7 @@ RUN apt-get update && \
   qemu-system-x86 \
   udhcpd \
   iproute2 \
+  git \
   fuse-overlayfs && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
