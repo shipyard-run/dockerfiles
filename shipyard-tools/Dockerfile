@@ -25,9 +25,9 @@ RUN apt-get update && \
 FROM base AS image-amd64-
 
 ENV KUBECTL_VERSION=latest
-ENV HELM_VERSION=v3.7.2
-ENV DOCKER_VERSION=20.10.9
-ENV SHIPYARD_VERSION=0.3.54
+ENV HELM_VERSION=v3.14.4
+ENV DOCKER_VERSION=26.0.1
+ENV JUMPPAD_VERSION=0.11.0
 
 # Copy installed tools to a specific directory, makes it easier to copy the tools
 # when this image is used as the base for another.
@@ -50,20 +50,20 @@ RUN curl -sL https://get.helm.sh/helm-$HELM_VERSION-linux-amd64.tar.gz -o ./helm
     mv ./linux-amd64/helm /usr/tools && \
     rm ./helm.tar.gz
 
-# Install Shipyard
-RUN curl -sL https://github.com/shipyard-run/shipyard/releases/download/v${SHIPYARD_VERSION}/shipyard_${SHIPYARD_VERSION}_Linux_x86_64.tar.gz -o shipyard.tar.gz && \
-    tar -xzf shipyard.tar.gz && \
-    mv shipyard /usr/tools && \
-    rm shipyard.tar.gz
+# Install Jumppad
+RUN curl -sL https://github.com/jumppad-labs/jumppad/releases/download/${JUMPPAD_VERSION}/jumppad_${JUMPPAD_VERSION}_linux_x86_64.tar.gz -o jumppad.tar.gz && \
+    tar -xzf jumppad.tar.gz && \
+    mv jumppad /usr/tools && \
+    rm jumppad.tar.gz
 
 
 # Copy Arm 8 binaries
 FROM base AS image-arm64-
 
 ENV KUBECTL_VERSION=latest
-ENV HELM_VERSION=v3.7.2
-ENV DOCKER_VERSION=20.10.9
-ENV SHIPYARD_VERSION=0.3.38
+ENV HELM_VERSION=v3.14.4
+ENV DOCKER_VERSION=26.0.1
+ENV JUMPPAD_VERSION=0.11.0
 
 # Copy installed tools to a specific directory, makes it easier to copy the tools
 # when this image is used as the base for another.
@@ -85,12 +85,11 @@ RUN curl -sL https://get.helm.sh/helm-$HELM_VERSION-linux-arm64.tar.gz -o ./helm
     mv ./linux-arm64/helm /usr/tools && \
     rm ./helm.tar.gz
 
-# Install Shipyard
-RUN curl -sL https://github.com/shipyard-run/shipyard/releases/download/v${SHIPYARD_VERSION}/shipyard_${SHIPYARD_VERSION}_linux_arm64.tar.gz -o shipyard.tar.gz && \
-    tar -xzf shipyard.tar.gz && \
-    mv shipyard /usr/tools && \
-    rm shipyard.tar.gz
-
+# Install Jumppad
+RUN curl -sL https://github.com/jumppad-labs/jumppad/releases/download/${JUMPPAD_VERSION}/jumppad_${JUMPPAD_VERSION}_linux_arm64.tar.gz -o jumppad.tar.gz && \
+    tar -xzf jumppad.tar.gz && \
+    mv jumppad /usr/tools && \
+    rm jumppad.tar.gz
 
 FROM image-${TARGETARCH}-${TARGETVARIANT}
 
