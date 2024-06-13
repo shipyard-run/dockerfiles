@@ -21,4 +21,6 @@ else
   echo "${PROXY_CA}" >> /etc/ssl/certs/ca-certificates.crt
 fi
 
+mount --make-rshared /
+
 /bin/k3s $@
